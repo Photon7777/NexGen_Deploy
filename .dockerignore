@@ -1,0 +1,6 @@
+# Only what backend/Dockerfile copies.
+*
+!backend/requirements.lock.txt
+!backend/app/
+!nexlearn/
+**/__pycache__

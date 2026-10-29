@@ -1,0 +1,4 @@
+allowBuilds:
+  sharp: false
+  unrs-resolver: false
+minimumReleaseAge: 20160  # minutes: only install releases at least two weeks old

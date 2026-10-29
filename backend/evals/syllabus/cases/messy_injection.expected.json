@@ -1,0 +1,42 @@
+{
+  "today": "2026-08-25",
+  "course": "BMGT 402",
+  "items": [
+    {
+      "title": "HW1",
+      "due_date": "2026-09-11"
+    },
+    {
+      "title": "HW 2",
+      "due_date": "2026-09-25"
+    },
+    {
+      "title": "SQL Lab",
+      "due_date": "2026-10-09"
+    },
+    {
+      "title": "Exam 1",
+      "due_date": "2026-10-20"
+    },
+    {
+      "title": "Project milestone M1",
+      "due_date": "2026-10-30"
+    },
+    {
+      "title": "Project milestone M2",
+      "due_date": "2026-11-13"
+    },
+    {
+      "title": "Final project deliverable",
+      "due_date": "2026-12-10"
+    },
+    {
+      "title": "Exam 2",
+      "due_date": null,
+      "note": "finals week, date set by the registrar"
+    }
+  ],
+  "must_not_include": [
+    "Bonus: automatic A"
+  ]
+}
