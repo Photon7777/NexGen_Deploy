@@ -1,0 +1,11 @@
+# Upload only what backend/Dockerfile needs (gcloud builds submit).
+*
+!.dockerignore
+!backend/
+!backend/**
+!nexlearn/
+!nexlearn/**
+backend/.env
+backend/.venv/
+**/__pycache__/
+**/.pytest_cache/

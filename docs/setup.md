@@ -87,7 +87,8 @@ One-time setup, in your terminal (the database URL is a secret, so type it yours
 gcloud config set project <your-project-id>
 gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com secretmanager.googleapis.com
 gcloud artifacts repositories create nexlearn --repository-format=docker --location=us-east4
-printf '%s' '<transaction pooler connection string>' | gcloud secrets create nexlearn-database-url --data-file=-
+# reads the URL from backend/.env so the password never lands in your shell history
+grep '^DATABASE_URL=' backend/.env | cut -d= -f2- | tr -d '\n' | gcloud secrets create nexlearn-database-url --data-file=-
 ```
 
 Grant permissions (both accounts are the project's default compute service account,
@@ -107,17 +108,43 @@ gcloud builds submit --config backend/cloudbuild.yaml .
 The command prints the service URL (`https://nexlearn-api-...run.app`). Check
 `<service URL>/health` returns `{"status":"ok"}`.
 
+To change only the allowed origins later, update that one variable rather than passing the
+env file (`--env-vars-file` replaces every variable on the service):
+
+```bash
+gcloud run services update nexlearn-api --region us-east4 '--update-env-vars=^;^ALLOWED_ORIGINS=["http://localhost:3000","https://nexlearn-plum.vercel.app"]'
+```
+
 ## 5. Deploy the web app to Vercel
 
-1. Sign in to [vercel.com](https://vercel.com) with GitHub, then **Add New**, then **Project**,
-   and import `Photon7777/NexGen_Deploy`.
-2. Set **Root Directory** to `frontend`.
-3. Add environment variables: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
-   and `NEXT_PUBLIC_API_URL` (the Cloud Run URL).
-4. Deploy, then wire the new URL back in:
-   - Google client: add it to Authorized JavaScript origins.
-   - Supabase URL Configuration: make it the Site URL and add `<vercel URL>/auth/callback`.
-   - `backend/cloudrun.env.yaml`: add it to `ALLOWED_ORIGINS`, and redeploy the API.
+Until v2 is merged, `main` has no `frontend/`, so deploy with the Vercel CLI from this
+folder instead of the dashboard's Git import. Use pnpm: `npx vercel` fails on some machines
+while fetching a dependency. Inside `frontend/`, pnpm only installs releases at least two
+weeks old, so pick a CLI version that qualifies.
+
+```bash
+cd frontend
+pnpm dlx vercel@64.1.0 login
+pnpm dlx vercel@64.1.0 link --yes --project nexlearn   # note: rewrites .env.local; restore it after
+pnpm dlx vercel@64.1.0 env add NEXT_PUBLIC_SUPABASE_URL production --value https://<project-ref>.supabase.co --yes
+pnpm dlx vercel@64.1.0 env add NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY production --value <publishable key> --yes
+pnpm dlx vercel@64.1.0 env add NEXT_PUBLIC_API_URL production --value <Cloud Run URL> --yes
+pnpm dlx vercel@64.1.0 env add ENABLE_EXPERIMENTAL_COREPACK production --value 1 --yes   # build with pnpm 11
+pnpm dlx vercel@64.1.0 deploy --prod --yes
+```
+
+Then wire the production URL (currently `https://nexlearn-plum.vercel.app`) back in:
+
+- Supabase URL Configuration: make it the Site URL and add `<vercel URL>/auth/callback`.
+- The API's `ALLOWED_ORIGINS` (command above, and `backend/cloudrun.env.yaml`).
+
+## Current deployment
+
+| Piece | Where |
+| --- | --- |
+| Web app | https://nexlearn-plum.vercel.app (Vercel project `nexlearn`) |
+| API | https://nexlearn-api-31169799531.us-east4.run.app (Cloud Run `nexlearn-api`, project `oval-bazaar-477703-a0`, us-east4) |
+| Database and sign-in | Supabase project `uwmtxhstrqxnaguvvisf` (us-east-1) |
 
 ## Secrets: what goes where
 
