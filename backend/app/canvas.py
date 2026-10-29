@@ -32,9 +32,9 @@ ASSIGNMENT_UID = re.compile(r"event-(assignment|assignment-override|sub-assignme
 COURSE_SUFFIX = re.compile(r"\s*\[([^\[\]]+)\]\s*$")
 
 # Canvas has no time estimates. First match wins, and students can change any of them.
-HOURS_BY_KEYWORD = [
-    (re.compile(r"\b(final|midterm|exam|test)\b", re.I), 6.0),
+HOURS_BY_KEYWORD = [  # project words first, so "Final Project" is a project, not a final exam
     (re.compile(r"\b(project|paper|essay|report|presentation|case)\b", re.I), 5.0),
+    (re.compile(r"\b(final|midterm|exam|test)\b", re.I), 6.0),
     (re.compile(r"\b(quiz|discussion|reflection|reading|participation|attendance|survey)\b", re.I), 1.0),
 ]
 DEFAULT_HOURS = 2.0

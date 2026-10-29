@@ -250,3 +250,35 @@ def test_feeds_are_private_to_each_student(client, make_user, canvas_serves, adm
     assert client.get("/canvas", headers=auth(other)).json()["connected"] is False
     assert client.delete("/canvas", headers=auth(other)).status_code == 204  # deletes nothing of the owner's
     assert admin_db.execute("select count(*) from canvas_feeds where user_id = %s", (owner,)).fetchone()[0] == 1
+
+
+@pytest.mark.parametrize(
+    "a, b",
+    [("BUDT 748", "BUDT748"), ("BUDT748", "BUDT 748: Analytics Consulting"), ("bmso758l", "BMSO 758L"),
+     ("BUDT748-0101-Fall2026", "BUDT 748"), ("Data Analytics", "data analytics")],
+)
+def test_course_names_that_are_the_same_course_share_a_key(a, b):
+    from app.routers.assignments import course_key
+
+    assert course_key(a) == course_key(b)
+
+
+def test_distinct_courses_keep_distinct_keys():
+    from app.routers.assignments import course_key
+
+    assert len({course_key(n) for n in ("BUDT 748", "BUDT 758T", "BUDT 758", "Leadership 101", "Leadership")}) == 5
+
+
+def test_canvas_and_syllabus_items_for_one_course_land_in_one_course(client, make_user, canvas_serves):
+    user = make_user()
+    due = (NOW + timedelta(days=9)).isoformat()
+    client.post("/syllabus/save", headers=auth(user),
+                json={"course": "BUDT 758T: Data Mining", "items": [{"title": "Final Report", "due_at": due, "hours_required": 10}]})
+    canvas_serves(semester())
+    client.put("/canvas", headers=auth(user), json={"feed_url": FEED})
+    courses = {a["course"] for a in client.get("/assignments", headers=auth(user)).json()}
+    assert courses == {"BUDT 758T: Data Mining", "BUDT704"}  # Canvas's BUDT758T joined the existing course
+
+
+def test_project_words_outrank_final_when_estimating_hours():
+    assert [canvas.estimate_hours(t) for t in ("Final Project Submission", "Final Exam", "Final Presentation", "Quiz 3")] == [5, 6, 5, 1]

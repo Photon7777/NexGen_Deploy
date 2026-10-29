@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import io
+import re
 from datetime import datetime
 from uuid import UUID
 
@@ -54,13 +55,28 @@ class ImportResult(BaseModel):
     assignments: list[Assignment]
 
 
+COURSE_CODE = re.compile(r"\s*([A-Za-z]{2,5})\s*-?\s*(\d{3}[A-Za-z]?)\b")
+
+
+def course_key(name: str) -> str:
+    """One key per course however a source writes it: Canvas says 'BUDT748', a syllabus
+    'BUDT 748: Analytics Consulting'. Names without a course code compare as written."""
+    code = COURSE_CODE.match(name)
+    return (code[1] + code[2]).lower() if code else re.sub(r"[^a-z0-9]", "", name.lower())
+
+
 def _course_id(conn: Connection, name: str | None) -> UUID | None:
+    """The student's course with this name, or the one it matches by course code, or a new one."""
     if not name or not name.strip():
         return None
+    name, key = name.strip(), course_key(name)
+    for row in conn.execute("select id, name from courses order by created_at").fetchall():
+        if course_key(row["name"]) == key:
+            return row["id"]
     row = conn.execute(
         "insert into courses (name) values (%s) "
         "on conflict (user_id, name) do update set name = excluded.name returning id",
-        (name.strip(),),
+        (name,),
     ).fetchone()
     return row["id"]
 
