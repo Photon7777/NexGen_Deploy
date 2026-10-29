@@ -27,6 +27,18 @@ def test_bad_or_missing_tokens_are_rejected(client, header):
     assert client.get("/assignments", headers=headers).status_code == 401
 
 
+def test_a_connection_the_database_dropped_is_replaced_not_reused(client, make_user, admin_db):
+    # Supabase's pooler closes idle connections. On Cloud Run this surfaced as a 500
+    # ("SSL error: unexpected eof") on the first request after a quiet spell.
+    user = make_user()
+    assert client.get("/assignments", headers=auth(user)).status_code == 200
+    admin_db.execute(
+        "select pg_terminate_backend(pid) from pg_stat_activity"
+        " where datname = current_database() and backend_type = 'client backend' and pid <> pg_backend_pid()"
+    )
+    assert client.get("/assignments", headers=auth(user)).status_code == 200
+
+
 def test_me_returns_the_profile_the_signup_trigger_created(client, make_user):
     user = make_user("Terry Terp")
     body = client.get("/me", headers=auth(user)).json()

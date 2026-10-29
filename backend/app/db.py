@@ -31,6 +31,9 @@ def open_pool() -> ConnectionPool:
             max_size=5,
             # Supabase's transaction pooler does not support prepared statements.
             kwargs={"row_factory": dict_row, "prepare_threshold": None},
+            # The pooler closes idle connections, so test each one before handing it out
+            # (one round trip) rather than failing the request that gets a dead one.
+            check=ConnectionPool.check_connection,
             open=True,
         )
     return _pool
