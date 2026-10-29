@@ -84,7 +84,7 @@ function Materials({ course, onChanged }: { course: Course; onChanged: () => voi
 
   return (
     <Card
-      title="Materials"
+      title={`Materials for ${course.name}`}
       actions={
         <button onClick={() => fileInput.current?.click()} disabled={busy} className={buttonSecondary}>
           {busy ? "Reading and indexing..." : "Upload a PDF"}
