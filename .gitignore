@@ -11,3 +11,10 @@ token.json
 checkins.csv
 .pytest_cache/
 .claude/
+
+# v2
+.venv/
+node_modules/
+.next/
+backend/.env
+frontend/.env.local

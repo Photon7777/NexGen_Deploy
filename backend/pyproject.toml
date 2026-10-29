@@ -1,0 +1,25 @@
+[project]
+name = "nexlearn-api"
+version = "2.0.0"
+description = "NexLearn v2 API: FastAPI over Supabase Postgres"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "psycopg[binary,pool]",
+    "pyjwt[crypto]",
+    "pydantic-settings",
+    "pandas",
+]
+
+[dependency-groups]
+dev = ["pytest", "httpx"]
+
+[tool.uv]
+# Only resolve releases at least two weeks old.
+exclude-newer = "2026-10-14T00:00:00Z"
+
+[tool.pytest.ini_options]
+# The shared nexlearn package lives at the repo root until the Streamlit app is retired.
+pythonpath = [".", ".."]
+testpaths = ["tests"]
