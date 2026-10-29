@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
 from .db import close_pool, open_pool
-from .routers import assignments, canvas, chat, me, plan, syllabus, tools
+from .routers import assignments, canvas, chat, courses, me, plan, syllabus, tools
 
 
 @asynccontextmanager
@@ -33,6 +33,7 @@ app.include_router(me.router)
 app.include_router(assignments.router)
 app.include_router(canvas.router)
 app.include_router(syllabus.router)
+app.include_router(courses.router)
 app.include_router(plan.router)
 app.include_router(chat.router)
 app.include_router(tools.router)

@@ -33,6 +33,16 @@ export type ChatReply = { reply: string; plan_updated: boolean; progress_updated
 
 export type Flashcard = { question: string; answer: string };
 
+export type Course = { id: string; name: string; documents: number; pages: number; assignments: number };
+
+export type CourseDocument = { id: string; filename: string; page_count: number; chunks: number; created_at: string };
+
+export type Citation = { n: number; document_id: string; filename: string; page_from: number; page_to: number; text: string };
+
+export type AskResult = { answer: string; covered: boolean; citations: Citation[]; latency_ms: number };
+
+export type PastQuestion = { id: number; question: string; answer: string; covered: boolean; citations: Citation[]; created_at: string };
+
 export type ImportResult = { imported: number; messages: string[]; assignments: Assignment[] };
 
 export type SyllabusItem = {

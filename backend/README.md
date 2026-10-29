@@ -17,6 +17,7 @@ PYTHONPATH=.. uv run uvicorn app.main:app --reload --port 8000   # docs at http:
 | `app/ai_deps.py` | The chat model dependency, and daily AI caps enforced by `private.take_ai_request` in Postgres |
 | `app/canvas.py` | Canvas feed links: an allow-list check, a download with no redirects and a size cap, and the iCal parser |
 | `app/syllabus.py` | Syllabus PDFs: text extraction, the structured-output prompt, and the checks behind each review flag |
+| `app/materials.py`, `app/ask.py` | Chunk RAG: line-packed chunks with overlap, `text-embedding-3-small` vectors in pgvector (HNSW), and grounded answers with citations |
 | `app/routers/` | See the endpoints below |
 | `tests/` | Runs against a real Postgres with the real migrations; AI endpoints use a scripted model, never OpenAI |
 
@@ -27,6 +28,8 @@ PYTHONPATH=.. uv run uvicorn app.main:app --reload --port 8000   # docs at http:
 | `POST /assignments/sample`, `POST /assignments/import` | Demo data, or a syllabus CSV (re-importing updates rows) |
 | `GET/PUT/DELETE /canvas`, `POST /canvas/sync` | Connect a Canvas calendar feed; syncing updates titles and due dates but never the student's hours or progress |
 | `POST /syllabus/extract`, `POST /syllabus/save` | Read a syllabus PDF into a draft the student reviews (flags for missing dates, items not in the PDF, and text aimed at AI tools), then save the rows they keep |
+| `GET/POST /courses`, `GET/POST /courses/{id}/documents`, `DELETE /documents/{id}` | Courses and their PDF materials: each page's text is kept, then chunked and embedded |
+| `POST /courses/{id}/ask`, `GET /courses/{id}/questions` | Answer from a course's materials only, citing pages; every question is logged with what was retrieved |
 | `POST /plan`, `GET /plan`, `GET /plan/ics` | Plan the next 7 days, read the saved plan, download it for any calendar |
 | `GET/POST/DELETE /chat` | The tool-calling agent; history is stored, so it remembers the conversation |
 | `POST /flashcards` | Structured-output flashcards on any topic |

@@ -1,4 +1,9 @@
 """Stand-ins for the OpenAI model, so AI endpoints are tested without a key or network."""
+import hashlib
+import math
+import re
+
+from langchain_core.messages import AIMessage
 from langchain_core.language_models.fake_chat_models import GenericFakeChatModel
 from pydantic import Field
 
@@ -41,7 +46,7 @@ class FakeExtractionModel:
     def __init__(self, result: dict | None = None, error: Exception | None = None):
         self.result, self.error, self.prompts = result, error, []
 
-    def with_structured_output(self, schema):
+    def with_structured_output(self, schema, include_raw: bool = False):
         fake = self
 
         class _Runner:
@@ -49,6 +54,23 @@ class FakeExtractionModel:
                 fake.prompts.append(prompt)
                 if fake.error:
                     raise fake.error
-                return schema.model_validate(fake.result)
+                parsed = schema.model_validate(fake.result)
+                if not include_raw:
+                    return parsed
+                raw = AIMessage(content="", usage_metadata={"input_tokens": 900, "output_tokens": 100, "total_tokens": 1000})
+                return {"raw": raw, "parsed": parsed, "parsing_error": None}
 
         return _Runner()
+
+
+def fake_embed(texts: list[str]) -> list[list[float]]:
+    """Bag-of-words vectors: texts that share words come out close, as real embeddings would for these tests."""
+    vectors = []
+    for text in texts:
+        v = [0.0] * 1536
+        for word in re.findall(r"[a-z]{3,}", text.lower()):
+            v[int(hashlib.md5(word.encode()).hexdigest(), 16) % 1536] += 1.0
+        v[0] += 0.01  # never the zero vector, which has no cosine distance
+        norm = math.sqrt(sum(x * x for x in v))
+        vectors.append([x / norm for x in v])
+    return vectors

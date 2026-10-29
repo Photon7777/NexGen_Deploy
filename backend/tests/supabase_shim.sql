@@ -32,3 +32,11 @@ $$;
 
 grant usage on schema auth, public, extensions to anon, authenticated, service_role;
 grant execute on function auth.uid() to anon, authenticated, service_role;
+
+-- Supabase puts extensions (pgvector) on every role's search path.
+do $$
+begin
+    execute format('alter database %I set search_path = "$user", public, extensions', current_database());
+end
+$$;
+set search_path = "$user", public, extensions;

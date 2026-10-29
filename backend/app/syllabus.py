@@ -7,7 +7,6 @@ syllabus, a date outside this term, or a supporting quote that does not appear i
 """
 from __future__ import annotations
 
-import io
 import re
 from collections import Counter
 from dataclasses import dataclass, field
@@ -16,7 +15,8 @@ from typing import Literal
 
 from langchain_core.language_models import BaseChatModel
 from pydantic import BaseModel, Field
-from pypdf import PdfReader
+
+from .pdf import PdfError, read_pages
 
 MAX_PDF_BYTES = 5_000_000
 MAX_PAGES = 40
@@ -80,13 +80,10 @@ SYLLABUS>>>"""
 def pdf_text(content: bytes) -> tuple[str, int]:
     """The PDF's text (first MAX_PAGES pages, at most MAX_CHARS) and its page count."""
     try:
-        reader = PdfReader(io.BytesIO(content))
-        if reader.is_encrypted:
-            reader.decrypt("")  # many posted PDFs are "encrypted" with an empty password
-        text = "\n".join(page.extract_text() or "" for page in reader.pages[:MAX_PAGES])
-        pages = len(reader.pages)
-    except Exception as e:  # pypdf raises many types on damaged files
+        page_texts, pages = read_pages(content, MAX_PAGES)
+    except PdfError as e:
         raise SyllabusError("NexLearn could not read this PDF. Try exporting it again, or use the CSV import.") from e
+    text = "\n".join(page_texts)
     if len(text.strip()) < MIN_CHARS:
         raise SyllabusError(
             "This PDF has no readable text, so it is probably a scan. Try the copy your instructor posted on Canvas, "

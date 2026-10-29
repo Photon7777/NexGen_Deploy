@@ -6,6 +6,7 @@ from psycopg import Connection
 from nexlearn import ai
 
 from .config import Settings, get_settings
+from .materials import Embedder, openai_embedder
 
 
 def get_chat_model(settings: Settings = Depends(get_settings)) -> BaseChatModel:
@@ -20,6 +21,13 @@ def get_extraction_model(settings: Settings = Depends(get_settings)) -> BaseChat
     if not settings.openai_api_key:
         raise HTTPException(503, "AI features are not configured on this server.")
     return ai.make_llm(settings.openai_api_key, settings.openai_model, temperature=0)
+
+
+def get_embedder(settings: Settings = Depends(get_settings)) -> Embedder:
+    """Tests override this dependency with a deterministic stand-in."""
+    if not settings.openai_api_key:
+        raise HTTPException(503, "AI features are not configured on this server.")
+    return openai_embedder(settings.openai_api_key)
 
 
 def take_ai_request(conn: Connection, kind: str, settings: Settings) -> None:
