@@ -26,7 +26,7 @@ Do the steps in order. Steps 1 and 2 take about 15 minutes.
 1. Go to [supabase.com](https://supabase.com), sign in with GitHub, and create a project:
    name `nexlearn`, region **East US (North Virginia)**. Save the database password in a password manager.
 2. Open **SQL Editor** and run each file in `supabase/migrations/`, oldest first
-   (`20261028000000_init.sql`, then `20261029000000_ai_usage.sql`).
+   (`20261028000000_init.sql`, `20261029000000_ai_usage.sql`, then `20261030000000_imports.sql`).
 3. Collect these values for later:
 
    | Value | Where |

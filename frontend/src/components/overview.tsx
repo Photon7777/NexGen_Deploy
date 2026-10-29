@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { api, json, type Assignment } from "@/lib/api";
 import { formatDue, relativeDays } from "@/lib/format";
+import { CanvasConnect } from "@/components/canvas-connect";
 import { Card, ErrorNote, buttonPrimary, buttonSecondary, input } from "@/components/ui";
 
 function urgencyClass(a: Assignment) {
@@ -106,6 +107,8 @@ export function Overview() {
         <Metric label="Most urgent" value={urgent?.title ?? "All done"} hint="Most hours per day needed to finish on time" />
       </div>
 
+      <CanvasConnect onSynced={setAssignments} />
+
       <Card
         title="Your assignments"
         actions={
@@ -143,7 +146,7 @@ export function Overview() {
         )}
         {assignments === null && !error && <p className="text-sm text-muted">Loading...</p>}
         {assignments?.length === 0 && (
-          <p className="text-sm text-muted">No assignments yet. Load the sample set, import a CSV, or add one below.</p>
+          <p className="text-sm text-muted">No assignments yet. Connect Canvas above, load the sample set, import a CSV, or add one below.</p>
         )}
 
         <ul className="divide-y divide-line">

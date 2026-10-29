@@ -110,8 +110,11 @@ def update_assignment(assignment_id: UUID, body: AssignmentPatch, conn: Connecti
 
 @router.delete("/{assignment_id}", status_code=204)
 def delete_assignment(assignment_id: UUID, conn: Connection = Depends(db)) -> Response:
-    if conn.execute("delete from assignments where id = %s returning id", (assignment_id,)).fetchone() is None:
+    row = conn.execute("delete from assignments where id = %s returning source, external_id", (assignment_id,)).fetchone()
+    if row is None:
         raise HTTPException(404, "Assignment not found")
+    if row["source"] == "canvas_feed":  # keep the next Canvas sync from adding it back
+        conn.execute("update canvas_feeds set dismissed = array_append(dismissed, %s)", (row["external_id"],))
     return Response(status_code=204)
 
 

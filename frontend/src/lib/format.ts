@@ -23,4 +23,13 @@ export function relativeDays(daysLeft: number, overdue: boolean): string {
   return `${d} days left`;
 }
 
+const ago = new Intl.RelativeTimeFormat("en-US", { numeric: "auto" });
+
+export function timeAgo(iso: string): string {
+  const minutes = Math.round((Date.now() - new Date(iso).getTime()) / 60_000);
+  if (minutes < 60) return ago.format(-minutes, "minute");
+  if (minutes < 48 * 60) return ago.format(-Math.round(minutes / 60), "hour");
+  return ago.format(-Math.round(minutes / 1440), "day");
+}
+
 export const DEFAULT_PLAN_SETTINGS = { daily_cap_hours: 4, start_hour: 9, end_hour: 22 };

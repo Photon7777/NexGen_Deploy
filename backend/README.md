@@ -15,6 +15,7 @@ PYTHONPATH=.. uv run uvicorn app.main:app --reload --port 8000   # docs at http:
 | `app/db.py` | Connection pool; runs each request as the `authenticated` role with the caller's claims |
 | `app/planning.py` | Converts database rows to and from the `nexlearn` planner (naive local times, unique names) |
 | `app/ai_deps.py` | The chat model dependency, and daily AI caps enforced by `private.take_ai_request` in Postgres |
+| `app/canvas.py` | Canvas feed links: an allow-list check, a download with no redirects and a size cap, and the iCal parser |
 | `app/routers/` | See the endpoints below |
 | `tests/` | Runs against a real Postgres with the real migrations; AI endpoints use a scripted model, never OpenAI |
 
@@ -23,6 +24,7 @@ PYTHONPATH=.. uv run uvicorn app.main:app --reload --port 8000   # docs at http:
 | `GET /me` | Profile created at sign-up |
 | `GET/POST /assignments`, `PATCH/DELETE /assignments/{id}` | Assignments with remaining hours, days left, and priority; progress changes are logged |
 | `POST /assignments/sample`, `POST /assignments/import` | Demo data, or a syllabus CSV (re-importing updates rows) |
+| `GET/PUT/DELETE /canvas`, `POST /canvas/sync` | Connect a Canvas calendar feed; syncing updates titles and due dates but never the student's hours or progress |
 | `POST /plan`, `GET /plan`, `GET /plan/ics` | Plan the next 7 days, read the saved plan, download it for any calendar |
 | `GET/POST/DELETE /chat` | The tool-calling agent; history is stored, so it remembers the conversation |
 | `POST /flashcards` | Structured-output flashcards on any topic |

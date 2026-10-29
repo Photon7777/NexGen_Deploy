@@ -33,6 +33,17 @@ export type ChatReply = { reply: string; plan_updated: boolean; progress_updated
 
 export type Flashcard = { question: string; answer: string };
 
+export type CanvasStatus = { connected: boolean; feed: string | null; synced_at: string | null; last_error: string | null };
+
+export type CanvasSync = {
+  added: number;
+  changed: number;
+  unchanged: number;
+  skipped_past: number;
+  synced_at: string;
+  assignments: Assignment[];
+};
+
 export type Checkin = {
   id: number;
   mood: number;
