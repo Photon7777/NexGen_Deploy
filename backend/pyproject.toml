@@ -10,6 +10,11 @@ dependencies = [
     "pyjwt[crypto]",
     "pydantic-settings",
     "pandas",
+    "langchain==0.3.27",
+    "langchain-core==0.3.79",
+    "langchain-openai==0.3.35",
+    "openai==2.7.1",
+    "python-multipart>=0.0.32",
 ]
 
 [dependency-groups]

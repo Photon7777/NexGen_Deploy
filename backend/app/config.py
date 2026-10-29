@@ -15,6 +15,13 @@ class Settings(BaseSettings):
     # JSON list, e.g. ["https://nexlearn.vercel.app"]
     allowed_origins: list[str] = ["http://localhost:3000"]
 
+    # AI features are off when no key is set.
+    openai_api_key: str = ""
+    openai_model: str = "gpt-4o-mini"
+    # The deployed app runs on the owner's OpenAI key. Also set a monthly budget in OpenAI.
+    ai_requests_per_user_per_day: int = 30
+    ai_requests_per_day: int = 300
+
 
 @lru_cache
 def get_settings() -> Settings:

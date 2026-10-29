@@ -49,7 +49,8 @@ def database_url() -> str:
 
 @pytest.fixture(scope="session")
 def client(database_url):
-    os.environ.update(DATABASE_URL=database_url, SUPABASE_JWT_SECRET=SECRET, SUPABASE_URL="")
+    # Explicit values beat backend/.env and the shell: tests never reach Supabase or OpenAI.
+    os.environ.update(DATABASE_URL=database_url, SUPABASE_JWT_SECRET=SECRET, SUPABASE_URL="", OPENAI_API_KEY="")
     from fastapi.testclient import TestClient
 
     from app.config import get_settings

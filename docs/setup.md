@@ -25,7 +25,8 @@ Do the steps in order. Steps 1 and 2 take about 15 minutes.
 
 1. Go to [supabase.com](https://supabase.com), sign in with GitHub, and create a project:
    name `nexlearn`, region **East US (North Virginia)**. Save the database password in a password manager.
-2. Open **SQL Editor**, paste all of `supabase/migrations/20261028000000_init.sql`, and click **Run**.
+2. Open **SQL Editor** and run each file in `supabase/migrations/`, oldest first
+   (`20261028000000_init.sql`, then `20261029000000_ai_usage.sql`).
 3. Collect these values for later:
 
    | Value | Where |
@@ -87,8 +88,9 @@ One-time setup, in your terminal (the database URL is a secret, so type it yours
 gcloud config set project <your-project-id>
 gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com secretmanager.googleapis.com
 gcloud artifacts repositories create nexlearn --repository-format=docker --location=us-east4
-# reads the URL from backend/.env so the password never lands in your shell history
+# reads the values from files so they never land in your shell history
 grep '^DATABASE_URL=' backend/.env | cut -d= -f2- | tr -d '\n' | gcloud secrets create nexlearn-database-url --data-file=-
+grep '^OPENAI_API_KEY=' backend/.env | cut -d= -f2- | tr -d '\n' | gcloud secrets create nexlearn-openai-key --data-file=-
 ```
 
 Grant permissions (both accounts are the project's default compute service account,
@@ -96,8 +98,8 @@ Grant permissions (both accounts are the project's default compute service accou
 
 - The **Cloud Build** account deploys, so it needs `roles/run.admin`,
   `roles/iam.serviceAccountUser`, and `roles/artifactregistry.writer`.
-- The **Cloud Run runtime** account reads the database URL, so it needs
-  `roles/secretmanager.secretAccessor` on `nexlearn-database-url`.
+- The **Cloud Run runtime** account reads the secrets, so it needs
+  `roles/secretmanager.secretAccessor` on `nexlearn-database-url` and `nexlearn-openai-key`.
 
 Fill in `backend/cloudrun.env.yaml`, then deploy from the repo root:
 
@@ -162,4 +164,4 @@ Then wire the production URL (currently `https://nexlearn-plum.vercel.app`) back
 | Database connection string | `backend/.env` (local), Secret Manager (Cloud Run) | git, Vercel |
 | Google client secret | Supabase provider settings | git, frontend |
 | Supabase publishable key | `frontend/.env.local`, Vercel | (safe in the browser) |
-| OpenAI key (Phase 0b) | `backend/.env`, Secret Manager | frontend |
+| OpenAI key | `backend/.env` (local), Secret Manager (Cloud Run) | git, frontend, Vercel |

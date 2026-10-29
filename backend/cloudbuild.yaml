@@ -25,7 +25,7 @@ steps:
       - --image=${_IMAGE}
       - --region=${_REGION}
       - --allow-unauthenticated  # the API checks Supabase tokens itself
-      - --set-secrets=DATABASE_URL=nexlearn-database-url:latest
+      - --set-secrets=DATABASE_URL=nexlearn-database-url:latest,OPENAI_API_KEY=nexlearn-openai-key:latest
       - --env-vars-file=backend/cloudrun.env.yaml
       - --min-instances=0
       - --max-instances=3
