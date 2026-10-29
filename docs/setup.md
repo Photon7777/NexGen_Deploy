@@ -117,21 +117,30 @@ gcloud run services update nexlearn-api --region us-east4 '--update-env-vars=^;^
 
 ## 5. Deploy the web app to Vercel
 
-Until v2 is merged, `main` has no `frontend/`, so deploy with the Vercel CLI from this
-folder instead of the dashboard's Git import. Use pnpm: `npx vercel` fails on some machines
-while fetching a dependency. Inside `frontend/`, pnpm only installs releases at least two
-weeks old, so pick a CLI version that qualifies.
+Use the Vercel CLI through pnpm (`npx vercel` fails on some machines while fetching a
+dependency). Inside `frontend/`, pnpm only installs releases at least two weeks old, so pick a
+CLI version that qualifies.
 
 ```bash
 cd frontend
 pnpm dlx vercel@64.1.0 login
 pnpm dlx vercel@64.1.0 link --yes --project nexlearn   # note: rewrites .env.local; restore it after
+pnpm dlx vercel@64.1.0 project update nexlearn --root-directory frontend --yes
 pnpm dlx vercel@64.1.0 env add NEXT_PUBLIC_SUPABASE_URL production --value https://<project-ref>.supabase.co --yes
 pnpm dlx vercel@64.1.0 env add NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY production --value <publishable key> --yes
 pnpm dlx vercel@64.1.0 env add NEXT_PUBLIC_API_URL production --value <Cloud Run URL> --yes
-pnpm dlx vercel@64.1.0 env add ENABLE_EXPERIMENTAL_COREPACK production --value 1 --yes   # build with pnpm 11
-pnpm dlx vercel@64.1.0 deploy --prod --yes
 ```
+
+Repeat the `env add` lines with `preview` in place of `production`.
+
+- **Builds come from GitHub.** Linking connected the repo, so every push builds a preview
+  deployment and posts a "Vercel" check on the pull request. The project's Root Directory
+  must be `frontend`, or the build finds no Next.js app.
+- **pnpm version:** `frontend/vercel.json` pins the install to pnpm 11.24.0. Vercel's own
+  pnpm detection looks for `packageManager` at the repo root, finds nothing, and falls back
+  to an old pnpm that cannot read the lockfile.
+- **Production:** until v2 is merged, `main` has no `frontend/`. To ship a v2 build, promote
+  a preview: `pnpm dlx vercel@64.1.0 promote <preview URL>`.
 
 Then wire the production URL (currently `https://nexlearn-plum.vercel.app`) back in:
 
