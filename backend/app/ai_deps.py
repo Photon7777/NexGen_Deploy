@@ -15,6 +15,13 @@ def get_chat_model(settings: Settings = Depends(get_settings)) -> BaseChatModel:
     return ai.make_llm(settings.openai_api_key, settings.openai_model)
 
 
+def get_extraction_model(settings: Settings = Depends(get_settings)) -> BaseChatModel:
+    """Temperature 0 for reading documents: the same PDF should give the same answer."""
+    if not settings.openai_api_key:
+        raise HTTPException(503, "AI features are not configured on this server.")
+    return ai.make_llm(settings.openai_api_key, settings.openai_model, temperature=0)
+
+
 def take_ai_request(conn: Connection, kind: str, settings: Settings) -> None:
     """Record one AI request, or refuse with 429 when the student or the app is over its daily cap."""
     refusal = conn.execute(

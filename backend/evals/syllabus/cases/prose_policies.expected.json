@@ -1,0 +1,15 @@
+{
+  "today": "2026-08-25",
+  "course": "INST 314",
+  "items": [
+    {"title": "Problem Set 1", "due_date": "2026-09-16"},
+    {"title": "Problem Set 2", "due_date": "2026-10-07"},
+    {"title": "Problem Set 3", "due_date": "2026-11-02"},
+    {"title": "Problem Set 4", "due_date": "2026-12-02"},
+    {"title": "Lab Report A", "due_date": "2026-09-30"},
+    {"title": "Lab Report B", "due_date": null, "note": "relative date: the student should check it"},
+    {"title": "Midterm exam", "due_date": null, "note": "Week 8 only"},
+    {"title": "Final exam", "due_date": null, "note": "TBA"},
+    {"title": "Participation", "due_date": null, "optional": true}
+  ]
+}

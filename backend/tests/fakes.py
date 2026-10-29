@@ -33,3 +33,22 @@ class FakeFlashcardModel:
                 return schema(cards=[{"question": f"Q{i}", "answer": f"A{i}"} for i in range(1, 11)])
 
         return _Runner()
+
+
+class FakeExtractionModel:
+    """Answers with_structured_output(schema).invoke(prompt) with a fixed result (or raises), recording prompts."""
+
+    def __init__(self, result: dict | None = None, error: Exception | None = None):
+        self.result, self.error, self.prompts = result, error, []
+
+    def with_structured_output(self, schema):
+        fake = self
+
+        class _Runner:
+            def invoke(self, prompt):
+                fake.prompts.append(prompt)
+                if fake.error:
+                    raise fake.error
+                return schema.model_validate(fake.result)
+
+        return _Runner()

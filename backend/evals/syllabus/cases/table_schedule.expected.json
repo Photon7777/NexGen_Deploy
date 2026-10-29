@@ -1,0 +1,20 @@
+{
+  "today": "2026-08-25",
+  "course": "BUDT 758T",
+  "items": [
+    {"title": "Homework 1", "due_date": "2026-09-08"},
+    {"title": "Quiz 1", "due_date": "2026-09-15"},
+    {"title": "Homework 2", "due_date": "2026-09-17"},
+    {"title": "Project proposal", "due_date": "2026-09-24"},
+    {"title": "Homework 3", "due_date": "2026-09-29"},
+    {"title": "Quiz 2", "due_date": "2026-10-01"},
+    {"title": "Midterm exam", "due_date": "2026-10-08"},
+    {"title": "Homework 4", "due_date": "2026-10-15"},
+    {"title": "Quiz 3", "due_date": "2026-10-29"},
+    {"title": "Homework 5", "due_date": "2026-11-03"},
+    {"title": "Project progress report", "due_date": "2026-11-17"},
+    {"title": "Project presentation", "due_date": "2026-12-01"},
+    {"title": "Final project report", "due_date": "2026-12-10"},
+    {"title": "Final exam", "due_date": "2026-12-15"}
+  ]
+}

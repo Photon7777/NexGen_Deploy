@@ -16,6 +16,7 @@ PYTHONPATH=.. uv run uvicorn app.main:app --reload --port 8000   # docs at http:
 | `app/planning.py` | Converts database rows to and from the `nexlearn` planner (naive local times, unique names) |
 | `app/ai_deps.py` | The chat model dependency, and daily AI caps enforced by `private.take_ai_request` in Postgres |
 | `app/canvas.py` | Canvas feed links: an allow-list check, a download with no redirects and a size cap, and the iCal parser |
+| `app/syllabus.py` | Syllabus PDFs: text extraction, the structured-output prompt, and the checks behind each review flag |
 | `app/routers/` | See the endpoints below |
 | `tests/` | Runs against a real Postgres with the real migrations; AI endpoints use a scripted model, never OpenAI |
 
@@ -25,6 +26,7 @@ PYTHONPATH=.. uv run uvicorn app.main:app --reload --port 8000   # docs at http:
 | `GET/POST /assignments`, `PATCH/DELETE /assignments/{id}` | Assignments with remaining hours, days left, and priority; progress changes are logged |
 | `POST /assignments/sample`, `POST /assignments/import` | Demo data, or a syllabus CSV (re-importing updates rows) |
 | `GET/PUT/DELETE /canvas`, `POST /canvas/sync` | Connect a Canvas calendar feed; syncing updates titles and due dates but never the student's hours or progress |
+| `POST /syllabus/extract`, `POST /syllabus/save` | Read a syllabus PDF into a draft the student reviews (flags for missing dates, items not in the PDF, and text aimed at AI tools), then save the rows they keep |
 | `POST /plan`, `GET /plan`, `GET /plan/ics` | Plan the next 7 days, read the saved plan, download it for any calendar |
 | `GET/POST/DELETE /chat` | The tool-calling agent; history is stored, so it remembers the conversation |
 | `POST /flashcards` | Structured-output flashcards on any topic |
@@ -38,6 +40,17 @@ Tests need a local Postgres with pgvector:
 ```bash
 docker run -d --name nexlearn-testdb -e POSTGRES_PASSWORD=postgres -p 54329:5432 pgvector/pgvector:pg17
 uv run pytest
+```
+
+## Evals
+
+`evals/syllabus/` scores syllabus extraction against hand-checked answer keys for four fictional
+syllabi (a schedule table, prose with "Week 8" and "TBA" dates, a bulleted list, and a messy page
+that tries to plant an item through text aimed at AI tools). It calls the real model, so it is not
+part of the test suite:
+
+```bash
+uv run python evals/syllabus/run.py   # needs OPENAI_API_KEY; writes evals/syllabus/results.md
 ```
 
 After changing dependencies, refresh the Docker requirements:

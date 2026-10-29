@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
 from .db import close_pool, open_pool
-from .routers import assignments, canvas, chat, me, plan, tools
+from .routers import assignments, canvas, chat, me, plan, syllabus, tools
 
 
 @asynccontextmanager
@@ -32,6 +32,7 @@ def health() -> dict:
 app.include_router(me.router)
 app.include_router(assignments.router)
 app.include_router(canvas.router)
+app.include_router(syllabus.router)
 app.include_router(plan.router)
 app.include_router(chat.router)
 app.include_router(tools.router)

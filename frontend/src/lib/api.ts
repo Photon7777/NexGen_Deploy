@@ -33,6 +33,21 @@ export type ChatReply = { reply: string; plan_updated: boolean; progress_updated
 
 export type Flashcard = { question: string; answer: string };
 
+export type ImportResult = { imported: number; messages: string[]; assignments: Assignment[] };
+
+export type SyllabusItem = {
+  title: string;
+  kind: string;
+  due_at: string | null;
+  due_text: string;
+  weight_pct: number | null;
+  hours_estimate: number;
+  evidence: string;
+  flags: string[];
+};
+
+export type SyllabusDraft = { course: string | null; pages: number; items: SyllabusItem[]; warnings: string[] };
+
 export type CanvasStatus = { connected: boolean; feed: string | null; synced_at: string | null; last_error: string | null };
 
 export type CanvasSync = {

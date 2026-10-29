@@ -1,0 +1,15 @@
+{
+  "today": "2026-08-25",
+  "course": "DATA 602",
+  "items": [
+    {"title": "Python Assessment", "due_date": "2026-09-04"},
+    {"title": "Assignment 1", "due_date": "2026-09-18"},
+    {"title": "Assignment 2", "due_date": "2026-10-02"},
+    {"title": "Mini Project 1", "due_date": "2026-10-16"},
+    {"title": "Take-home Midterm", "due_date": "2026-10-24"},
+    {"title": "Assignment 3", "due_date": "2026-11-06"},
+    {"title": "Mini Project 2", "due_date": "2026-11-20"},
+    {"title": "Final Project", "due_date": "2026-12-11"},
+    {"title": "Weekly discussion posts", "due_date": null, "optional": true}
+  ]
+}
