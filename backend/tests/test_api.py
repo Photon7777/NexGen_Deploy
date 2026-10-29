@@ -11,6 +11,24 @@ def test_health(client):
     assert client.get("/health").json() == {"status": "ok"}
 
 
+def test_browsers_may_call_every_route(client):
+    # Browsers send a CORS preflight before any PUT, PATCH, or DELETE, and before any request
+    # carrying a token. A method missing from the CORS settings fails there, and the page only
+    # sees "Failed to fetch"; the TestClient alone never notices.
+    routes = [(path, method.upper()) for path, ops in client.get("/openapi.json").json()["paths"].items() for method in ops]
+    assert ("/canvas", "PUT") in routes  # the schema lists routes from every router
+    refused = [
+        f"{method} {path}"
+        for path, method in routes
+        if client.options(
+            path,
+            headers={"Origin": "http://localhost:3000", "Access-Control-Request-Method": method,
+                     "Access-Control-Request-Headers": "authorization,content-type"},
+        ).status_code != 200
+    ]
+    assert refused == []
+
+
 @pytest.mark.parametrize(
     "header",
     [

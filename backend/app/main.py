@@ -19,7 +19,7 @@ app = FastAPI(title="NexLearn API", version="2.0.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=get_settings().allowed_origins,
-    allow_methods=["GET", "POST", "PATCH", "DELETE"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],  # tests/test_api.py checks every route
     allow_headers=["Authorization", "Content-Type"],
 )
 
