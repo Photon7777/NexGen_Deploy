@@ -3,3 +3,11 @@ venv/
 .DS_Store
 __pycache__/
 *.pyc
+
+# secrets and local-only files
+.streamlit/secrets.toml
+credentials.json
+token.json
+checkins.csv
+.pytest_cache/
+.claude/
